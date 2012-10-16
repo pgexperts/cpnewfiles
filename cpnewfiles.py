@@ -67,6 +67,8 @@ for file in getfiles(sourcedir):
               os.remove(fullpath)
             except:
               print "Error deleting " + fullpath
+              # we don't exit here because this should just get taken
+              # care of on the next run
       except:
         print "Error copying " + fullpath + \
           " to " + destdir
