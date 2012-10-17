@@ -5,8 +5,19 @@ import re
 import shutil
 import sys
 import shelve
+import signal
+import atexit
 from datetime import datetime, timedelta
 from optparse import OptionParser
+
+LOCKFILE = '.cpnewfiles_lockfile'
+
+def sigint(signal, frame):
+    sys.stderr.write("Exited with SIGINT.\n")
+    
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, sigint)
 
 
 parser = OptionParser()
@@ -23,6 +34,25 @@ parser.add_option('', "--debug", action="store_const", const=1,
 
 sourcedir = args[0]
 destdir = args[1]
+
+LOCKFILE_PATH = os.path.join(sourcedir, LOCKFILE)
+
+@atexit.register
+def remove_lockfile():
+    try:
+        os.remove(LOCKFILE_PATH)
+    except OSError:
+        pass
+
+def create_lockfile():
+    try:
+        os.fdopen(open(LOCKFILE_PATH, os.O_EXCL | os.O_CREAT))
+    except OSError:
+        sys.stderr.write("Could not create lockfile %s" % LOCKFILE_PATH)
+        sys.exit(1)
+
+
+create_lockfile()
 
 keeptime = datetime.now() - timedelta(hours=options.hours, minutes=options.minutes)
 
