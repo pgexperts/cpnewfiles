@@ -34,13 +34,6 @@ from optparse import OptionParser
 
 LOCKFILE = '.cpnewfiles_lockfile'
 
-def sigint(signal, frame):
-    sys.stderr.write("Exited with SIGINT.\n")
-    
-    sys.exit(1)
-
-signal.signal(signal.SIGINT, sigint)
-
 
 parser = OptionParser()
 
@@ -59,6 +52,16 @@ destdir = args[1]
 
 LOCKFILE_PATH = os.path.join(sourcedir, LOCKFILE)
 
+def create_lockfile():
+    try:
+        os.fdopen(os.open(LOCKFILE_PATH, os.O_EXCL | os.O_CREAT))
+    except OSError:
+        sys.stderr.write("Could not create lockfile %s" % LOCKFILE_PATH)
+        sys.exit(1)
+
+
+create_lockfile()
+
 @atexit.register
 def remove_lockfile():
     try:
@@ -66,15 +69,12 @@ def remove_lockfile():
     except OSError:
         pass
 
-def create_lockfile():
-    try:
-        os.fdopen(open(LOCKFILE_PATH, os.O_EXCL | os.O_CREAT))
-    except OSError:
-        sys.stderr.write("Could not create lockfile %s" % LOCKFILE_PATH)
-        sys.exit(1)
+def sigint(signal, frame):
+    sys.stderr.write("Exited with SIGINT.\n")
+    
+    sys.exit(1)
 
-
-create_lockfile()
+signal.signal(signal.SIGINT, sigint)
 
 keeptime = datetime.now() - timedelta(hours=options.hours, minutes=options.minutes)
 
