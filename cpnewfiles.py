@@ -56,7 +56,7 @@ def create_lockfile():
     try:
         os.fdopen(os.open(LOCKFILE_PATH, os.O_EXCL | os.O_CREAT))
     except OSError:
-        sys.stderr.write("Could not create lockfile %s" % LOCKFILE_PATH)
+        sys.stderr.write("Could not create lockfile %s\n" % LOCKFILE_PATH)
         sys.exit(1)
 
 
