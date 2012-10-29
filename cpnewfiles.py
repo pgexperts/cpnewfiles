@@ -112,15 +112,6 @@ for file in getfiles(sourcedir):
       try:
           shutil.copy(fullpath, destdir)
           shelf["lastfilets"] = ts
-          if ts < keeptime:
-            try:
-              if options.debug: 
-                print "deleting " + fullpath
-              os.remove(fullpath)
-            except:
-              print "Error deleting " + fullpath
-              # we don't exit here because this should just get taken
-              # care of on the next run
       except:
         print "Error copying " + fullpath + \
           " to " + destdir
@@ -129,5 +120,14 @@ for file in getfiles(sourcedir):
     else:
       if options.debug:
         print "Not copying due to age"
+    if ts < keeptime:
+      try:
+        if options.debug: 
+          print "deleting " + fullpath
+        os.remove(fullpath)
+      except:
+        print "Error deleting " + fullpath
+        # we don't exit here because this should just get taken
+        # care of on the next run
 
 shelf.close()
