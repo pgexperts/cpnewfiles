@@ -96,8 +96,16 @@ if options.debug:
 def getfiles(dirpath):
   a = [s for s in os.listdir(dirpath)
     if os.path.isfile(os.path.join(dirpath, s))]
-  a.sort(key=lambda s: os.path.getmtime(os.path.join(dirpath, s)))
+  a.sort(key=lambda s: trygetmtime(os.path.join(dirpath, s)))
   return a
+
+# Function to wrap getmtime in a try block to avoid 
+# a race condition with rsync temp files
+def trygetmtime(filename):
+  try:
+    return os.path.getmtime(filename)
+  except:
+    return None
 
 # iterate over the files in the source directory
 for file in getfiles(sourcedir):
