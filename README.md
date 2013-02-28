@@ -9,3 +9,6 @@ via the --hours and --minutes command line options.
 Example usage:
 
 cpnewfiles.py --hours=2 --minutes=30 /some/source/dir /some/dest/dir
+
+This script is licensed under the PostgreSQL License. See the LICENSE file for details.
+
